@@ -14,7 +14,7 @@ exports.registerUser = async (req, res, next) => {
     console.log("Registration successful. Please check your email to verify your account.");
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error during registration.' });
+    res.status(500).json({ message: error.response.data.message });
     console.log("Registration unsuccessful. Please try again.");
   }
 };

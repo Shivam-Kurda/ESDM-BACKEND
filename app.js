@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const {fetchUserMetadata}=require('./controllers/usermetaController')
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +13,8 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/auth', authRoutes);
+
+app.get('/api/user-metadata', fetchUserMetadata);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
