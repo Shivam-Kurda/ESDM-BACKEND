@@ -14,7 +14,9 @@ exports.createUser = async (userData) => {
         country:userData.country,
         company:userData.company,
         firstname:userData.firstname,
-        lastname:userData.lastname
+        lastname:userData.lastname,
+        registrationIp:userData.registrationIp,
+        registrationTime:userData.registrationTime
       },
     },
     {

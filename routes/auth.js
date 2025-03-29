@@ -8,4 +8,5 @@ const fetchMetadata = require('../controllers/usermetaController')
 router.post('/register', authController.registerUser);
 router.post('/update-profile',  metaupdatecontroller.updateProfile)
 router.get('/fetch-metadata', fetchMetadata.fetchUserMetadata)
+
 module.exports = router;
