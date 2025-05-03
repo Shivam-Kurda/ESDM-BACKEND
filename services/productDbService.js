@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise'); // Assuming you're using mysql2
 const getDbConnection=require('../utils/dbConnectionUtil');
+const {getMongoDb}=require('../utils/mongoDatabaseUtil')
 exports.addProductToDatabase = async (ProductData) => {
     const { ProductName, Description , Category, img } = ProductData;
   
@@ -11,7 +12,7 @@ exports.addProductToDatabase = async (ProductData) => {
     const values = [ProductName];
   
     try {
-        const connection = getDbConnection();
+        const connection = await getDbConnection();
         await connection.query(query, values);
         connection.release();
       } catch (error) {
@@ -41,5 +42,40 @@ exports.getProductDetails = async(ProductName) => {
         // console.error(error)
         // res.status(500).json({ message: error.response.data.message });
         throw error
+      }
+}
+exports.getProductList=async()=> {
+  const query=`SELECT * FROM product_masters`
+  try{
+    const connnection=await getDbConnection();
+    const rows=await connnection.execute(query)
+    console.log(rows)
+    return rows.length>0 ? rows[0] : null;
+  }
+  catch(error){
+    throw error;
+  }
+}
+exports.getCompaniesForProduct=async(ProductName)=> {
+      try{
+        const mongo_db=await getMongoDb();
+        const company_collection=mongo_db.collection('companies');
+        let query={}
+        if(ProductName){
+             query = {
+            products: {
+              $elemMatch: {
+                ProductName: { $regex: new RegExp(`^${ProductName}$`, 'i') }
+              }
+            }
+          };
+        }
+        
+        const companies = await company_collection.find(query).toArray();
+        return companies
+
+      }
+      catch(error){
+        throw error;
       }
 }

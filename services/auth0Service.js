@@ -11,12 +11,14 @@ exports.createUser = async (userData) => {
       password: userData.password,
       connection: 'Username-Password-Authentication',
       user_metadata: {
+        email:userData.email,
         country:userData.country,
         company:userData.company,
         firstname:userData.firstname,
         lastname:userData.lastname,
         registrationIp:userData.registrationIp,
         registrationTime:userData.registrationTime
+
       },
     },
     {

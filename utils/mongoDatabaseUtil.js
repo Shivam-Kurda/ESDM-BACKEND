@@ -4,7 +4,9 @@ const getMongoDb=async() => {
     try{
         await client.connect();
         const db = client.db('esdm_db');
+        console.log("Connected to MongoDB");
         return db
+        
     }
     catch(error){
         console.error(error)

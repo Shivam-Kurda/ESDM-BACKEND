@@ -15,7 +15,7 @@ exports.registerUser = async (req, res, next) => {
     const registrationTime=new Date().toISOString()
     const userData = { email, password, country, company, firstname, lastname , registrationIp, registrationTime };
     
-    // const auth0user=await auth0Service.createUser(userData);
+    const auth0user=await auth0Service.createUser(userData);
     // console.log(auth0user);
     await userDbService.addUserToDatabase(userData)
     res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });
