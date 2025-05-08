@@ -6,6 +6,7 @@ const {getCompanyDetails}=companyDbService
 const {edit_ProductToCompany}=companyDbService
 const {addQuotationRequestToCompany}=companyDbService
 const {getQuotationRequests}=companyDbService
+const csv = require('csvtojson');
 exports.addProducttoCompany=async(req,res,next) => {
     try{
         console.log(req.query.userId)
@@ -89,22 +90,53 @@ exports.edit_ProductToCompany = async(req,res,next) => {
         res.status(500).json({error:error.message});
     }
 }
-exports.addQuotationRequestToCompany = async(req,res,next) => {
-    try{
-        const userId=req.query.userId
-        console.log("add quotation request",userId)
-        const {productName,requirements,SupplierCompany} = req.body
-        console.log(userId)
-        console.log(productName)
-        console.log(requirements)
-        await addQuotationRequestToCompany(userId,productName,requirements,SupplierCompany)
-        res.status(201).json({message:'Quotation request added successfuly to company product list'})
+exports.addQuotationRequestToCompany = async (req, res, next) => {
+    try {
+      const userId  = req.query.userId;
+      const { productName, SupplierCompany } = req.body;
+  
+      if (!productName || !SupplierCompany) {
+        return res.status(400).json({ message: 'Missing productName / SupplierCompany' });
+      }
+  
+      // ------------------------------------------------------------------
+      // Obtain the quotation details either from an uploaded CSV OR from a
+      // plain-text field called "requirements" (fallback).
+      // ------------------------------------------------------------------
+      let quotationDetails;
+  
+      if (req.file) {
+        // 1️⃣  If we got a CSV file -> convert it to JSON (array of rows)
+        const csvString     = req.file.buffer.toString('utf-8');
+        quotationDetails   = await csv().fromString(csvString);
+        console.log("CSV file received: ", quotationDetails);
+  
+        // If you’d rather keep the raw CSV text or a Base64 string instead
+        // of a parsed array, replace the line above with:
+        // quotationDetails = csvString;          // raw text
+        // or quotationDetails = req.file.buffer; // Buffer (binary)
+      } else if (req.body.requirements) {
+        // 2️⃣  Fallback – they sent a plain textarea
+        quotationDetails = req.body.requirements;
+      } else {
+        return res.status(400).json({ message: 'No requirements provided' });
+      }
+      console.log("Quotation details received: ", quotationDetails);
+      await addQuotationRequestToCompany(
+        userId,
+        productName,
+        quotationDetails,
+        SupplierCompany
+      );
+  
+      res
+        .status(201)
+        .json({ message: 'Quotation request added successfully to company product list' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error adding product to database' });
     }
-    catch(error){
-        console.error(error);
-        res.status(500).json({message:'Error adding product to database'})
-    }
-}
+  };
 exports.getQuotationRequests = async(req,res,next) => {
     try{
         const userId=req.query.userId

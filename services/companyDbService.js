@@ -310,7 +310,6 @@ exports.addQuotationRequestToCompany = async(userId,ProductName,RequestDetails,S
     const requesting_company_name=company
     const requesting_company_data=await this.getCompanySqlData(requesting_company_name)
     const requesting_cin=requesting_company_data.corporate_identifier
-
     const suplpier_company_data=await this.getCompanySqlData(SupplierCompany)
     const supplier_cin=suplpier_company_data.corporate_identifier
     const mongo_db=await getMongoDb()
